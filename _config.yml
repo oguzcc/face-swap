@@ -1,0 +1,22 @@
+# GitHub Pages (Jekyll) configuration.
+#
+# We use Jekyll's "no theme + only the files we ship" mode — no Markdown,
+# no auto-rendering. The 404.html implements the /r/<code> SPA-fallback
+# trick that lets a static host emulate dynamic referral routes.
+#
+# `.well-known/` is normally excluded by Jekyll (dotfiles). Include it so
+# apple-app-site-association + assetlinks.json reach the public URL.
+include:
+  - .well-known
+  - .well-known/apple-app-site-association
+  - .well-known/assetlinks.json
+
+# Don't try to render this Markdown file as a Jekyll page when published.
+exclude:
+  - README.md
+
+# apple-app-site-association MUST be served with Content-Type
+# application/json. GitHub Pages serves it as text/plain by default. iOS
+# 14+ accepts both, but if a future iOS becomes strict we'll need to either
+# rename to /apple-app-site-association.json or host elsewhere.
+plugins: []

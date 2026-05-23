@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex" />
+  <title>FaceSwap — Invite</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0b0b0f;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    main { max-width: 460px; }
+    h1 { font-size: 1.8rem; margin: 0 0 12px; line-height: 1.2; }
+    p { color: #cfcfd6; margin: 6px 0; }
+    .code {
+      font-size: 2.4rem; font-weight: 800; letter-spacing: 0.16em;
+      color: #9333EA; padding: 18px 0;
+    }
+    .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+    a.btn {
+      display: inline-block; padding: 14px 22px; border-radius: 999px;
+      text-decoration: none; font-weight: 600; font-size: 0.95rem;
+    }
+    a.btn.primary { background: #9333EA; color: #fff; }
+    a.btn.secondary { background: #fff; color: #0b0b0f; }
+    .muted { color: #888; font-size: 0.85rem; margin-top: 28px; }
+    .fallback-home { display: none; }
+    .invite-block.hidden { display: none; }
+    .invite-block.hidden + .fallback-home { display: block; }
+  </style>
+</head>
+<body>
+  <main>
+    <div id="invite-block" class="invite-block">
+      <h1>You&rsquo;ve been invited to FaceSwap</h1>
+      <p>Use this code to unlock <strong>5 free HD videos</strong>:</p>
+      <div class="code" id="code-display">------</div>
+      <p class="muted" id="copy-status">Tap a button below to install the app, then paste the code in <em>Invite friends</em>.</p>
+      <div class="btn-row">
+        <a class="btn primary" id="appstore" href="#">App Store</a>
+        <a class="btn secondary" id="playstore" href="#">Google Play</a>
+      </div>
+    </div>
+    <div class="fallback-home">
+      <h1>FaceSwap</h1>
+      <p>AI face-swap videos for Shorts, TikTok &amp; Reels.</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://apps.apple.com">App Store</a>
+        <a class="btn secondary" href="https://play.google.com">Google Play</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Static GitHub Pages serves this as a 404 fallback. We use that to
+    // emulate "dynamic" /r/<code> routes without paying for a Next.js host.
+    //
+    // The hosting URL prefix may differ:
+    //   https://oguzcc.github.io/face-swap-app/r/ABC123
+    //                         └────── prefix ──────┘
+    // We look for the segment AFTER the literal "r" path component.
+    (function () {
+      var path = window.location.pathname;
+      var match = path.match(/\/r\/([A-HJ-NP-Z2-9]{6})\/?$/i);
+      if (!match) return; // Fall back to the marketing home block.
+      var code = match[1].toUpperCase();
+      var block = document.getElementById('invite-block');
+      block.classList.remove('hidden');
+      document.getElementById('code-display').textContent = code;
+
+      // Stash in localStorage so a same-device install + first launch can
+      // surface the code. Universal Links / App Links handle the in-flight
+      // case but require iOS Team ID + Android signing cert (see
+      // docs/.well-known/* for the stub manifests).
+      try { localStorage.setItem('faceswap.referralCode', code); } catch (_) {}
+
+      // Wire the store links if we know the IDs at build time. Fill these
+      // in once App Store Connect + Play Console list the app.
+      var APP_STORE_ID = ''; // e.g. '6469123456'
+      var PLAY_STORE_ID = 'com.oguzcc.face.swap';
+      var apple = document.getElementById('appstore');
+      var android = document.getElementById('playstore');
+      apple.href = APP_STORE_ID ? ('https://apps.apple.com/app/id' + APP_STORE_ID) : '#';
+      if (!APP_STORE_ID) apple.style.opacity = '0.5';
+      android.href = 'https://play.google.com/store/apps/details?id=' + PLAY_STORE_ID;
+
+      // If the app is installed AND a Universal Link/App Link is registered,
+      // the OS intercepts BEFORE we get here. As a courtesy, also try the
+      // custom URL scheme so a manual paste from the user can reach the app:
+      var customSchemeTimer = setTimeout(function () {
+        // give the OS a moment; no-op if no app registered the scheme.
+      }, 1500);
+      var customLink = document.createElement('a');
+      customLink.href = 'faceswap://r/' + code;
+      customLink.style.display = 'none';
+      document.body.appendChild(customLink);
+      // We don't auto-fire the scheme — browsers warn / show "open in app?"
+      // banners which is more confusing than helpful for cold visitors.
+      // Users tap the store button instead.
+    })();
+  </script>
+</body>
+</html>
