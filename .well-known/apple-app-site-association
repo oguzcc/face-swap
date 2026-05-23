@@ -3,10 +3,9 @@
     "apps": [],
     "details": [
       {
-        "appIDs": ["TEAMID.com.oguzcc.face.swap"],
+        "appIDs": ["XPSWH2UYZP.com.oguzcc.face.swap"],
         "components": [
-          { "/": "/r/*", "comment": "Referral codes" },
-          { "/": "/face-swap-app/r/*", "comment": "Referral codes (GH Pages subpath)" }
+          { "/": "/r/*", "comment": "Referral codes" }
         ]
       }
     ]
